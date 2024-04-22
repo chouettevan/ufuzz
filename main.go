@@ -2,24 +2,28 @@ package main
 
 import (
 	"github.com/alexflint/go-arg"
-	"crypto/tls"
-	"io"
-	"os"
 )
 	
-var args struct {
-	Tls bool
+type args struct {
+	Tls bool	`help:"Add this flag if you wish to connect via https"`
 	Host string `arg:"-h,required" help:"target host"`
 	Port int `arg:"-p" default:"80" help:"http(s) server port"`
+	Config string `arg:"-f,required" help:"path to config file"`
 	Wordlists []string `arg:"-w,separate"`
 }
+func (args) Description() string {
+return `ufuzz,unlike most web fuzzers,uses a config file containing an http request in which it will substitute the placeholders S1,S2,S3.. with input from the wordlists.
+Example:
+	ufuzz -f ufuzz.conf -h 1.1.1.1 -p 443 -tls -w /path/to/wordlist | grep -v 404
+	with ufuzz.conf containing:
+		GET /S1 HTTP/1.1
+		Host:1.1.1.1
+Will fuzz for directories
+Placeholders can be used anywhere within the config file.
+`
+}
+
 func main() {
+	var args args
 	arg.MustParse(&args)
-	conn,err := tls.Dial("tcp","mail.google.com:443",nil)
-	if (err != nil ) {
-		panic(err);
-	}
-	conn.Write([]byte("GET / HTTP/1.1\nHost:mail.google.com\n\n"))
-	io.Copy(os.Stdout,conn);
-	
 }
