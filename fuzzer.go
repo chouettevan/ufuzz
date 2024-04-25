@@ -13,7 +13,6 @@ func fuzzer(connection io.ReadWriteCloser,mu *sync.Mutex,ch *chan Task,wg *sync.
 	wg.Add(1)
 	defer wg.Done()
 	scan := bufio.NewScanner(connection)	
-	var status uint16
 	var delay int64
 	for {
 		mu.Lock()
@@ -27,8 +26,8 @@ func fuzzer(connection io.ReadWriteCloser,mu *sync.Mutex,ch *chan Task,wg *sync.
 			continue
 		}
 		scan.Scan() 
-		fmt.Sscanf(scan.Text(),"HTTP/1.1 %d",status)
-		fmt.Printf("%s  %d  %d \n",tsk.Params,status,delay);
+		fmt.Printf("%s  %s  %d \n",tsk.Params,scan.Text(),delay);
+		for scan.Scan() {}
 	}
 
 }
