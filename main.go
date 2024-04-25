@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"sync"
-	"time"
 
 	"github.com/alexflint/go-arg"
 )
@@ -18,12 +17,14 @@ type args struct {
 	Port int `arg:"-p" default:"80" help:"http(s) server port"`
 	Config string `arg:"-f,required" help:"path to config file"`
 	Wordlists []string `arg:"-w,separate"`
-	Threads int `arg:"-t", default:"50"`
+	Threads int `arg:"-t" default:"50"`
 }
+
 type Task struct {
 	Request string
 	Params string
 }
+
 func (args) Description() string {
 return `ufuzz,unlike most web fuzzers,uses a config file containing an http Request in which it will substitute the placeholders S1,S2,S3.. with input from the wordlists.
 Example:
@@ -37,10 +38,15 @@ Placeholders can be used anywhere within the config file.
 }
 
 func main() {
+	var wg sync.WaitGroup
 	var args args
 	var mu sync.Mutex
 	channel := make(chan Task)
 	arg.MustParse(&args)
+	for i := 0;i < len(args.Wordlists);i++ {
+		fmt.Printf("S%d     ",i+1)
+	}
+	fmt.Println()
 	for i := 0;i < args.Threads;i++ {
 		var conn io.ReadWriteCloser
 		var err error
@@ -50,31 +56,18 @@ func main() {
 			conn,err = net.Dial("tcp",fmt.Sprintf("%s:%d",args.Host,args.Port))
 		}
 		if err != nil {
-			panic(err)
+			fmt.Fprintln(os.Stderr,err.Error())
 		}
-		go fuzzer(conn,&mu,&channel);
+		if conn != nil {
+			go fuzzer(conn,&mu,&channel,&wg);
+		}
 	}
+	file,err := os.Open(args.Config)
+	if err != nil {
+		panic(err)
+	}
+	data,err := io.ReadAll(file)
+	SendTasks(&channel,args.Wordlists,string(data),1,"")
+	wg.Wait()
 }
 
-func fuzzer(connection io.ReadWriteCloser,mu *sync.Mutex,ch *chan Task) {
-	defer connection.Close()
-	scan := bufio.NewScanner(connection)	
-	var status uint16
-	var delay int64
-	for {
-		mu.Lock()
-		tsk := <- *ch
-		mu.Unlock()
-		delay = time.Now().Unix()
-		_,err := connection.Write([]byte(tsk.Request))
-		delay = time.Now().Unix() - delay
-		if err != nil {
-			fmt.Println(err.Error())
-			continue
-		}
-		scan.Scan() 
-		fmt.Sscanf(scan.Text(),"HTTP/1.1 %d",status)
-		fmt.Printf("%s  %d  %d",tsk.Params,status,delay);
-	}
-
-}
