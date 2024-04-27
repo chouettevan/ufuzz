@@ -24,5 +24,5 @@ func getStatus(line string ) int {
 	var status int
 	var version float64
 	fmt.Sscanf(line,"HTTP/%f %d ",&version,&status)
-	return status
+	return status+1
 }

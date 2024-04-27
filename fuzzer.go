@@ -26,5 +26,4 @@ func fuzzer(connection io.ReadWriteCloser,mu *sync.Mutex,ch *chan Task,wg *sync.
 		fmt.Printf("%s    %d    %s",tsk.Params,delay,parser.HttpParse(connection))
 		wg.Done()
 	}
-
 }
