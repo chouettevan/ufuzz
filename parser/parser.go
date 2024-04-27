@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-func HttpParse(conn io.Reader) {
+func HttpParse(conn io.Reader) string {
 	scan := bufio.NewScanner(conn)
 	var size uint64
 	scan.Scan()
@@ -14,8 +14,10 @@ func HttpParse(conn io.Reader) {
 	size += uint64(len(scan.Bytes()))
 	for scan.Scan() {
 		size += uint64(len(scan.Bytes()))
+		// add 1 byte for the \n character
+		size++
 	}
-	fmt.Printf("%d    %d \n",status,size)
+	return fmt.Sprintf("%d    %d\n",status,size)
 }
 
 func getStatus(line string ) int {
