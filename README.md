@@ -28,7 +28,7 @@ Host:localhost
 Connection:keep-alive
 
 ```
-you the run the follwing command:
+you then run the follwing command:
 ```
 ufuzz --host localhost --port 80/443 --config /path/to/config -w /path/to/wordlists
 ```
