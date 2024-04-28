@@ -18,3 +18,20 @@ go build
 ```
 
 you should find an executable named `ufuzz`
+## Usage
+
+in order to fuzz,you must first write a config file containing an HTTP request template,in the following form:
+
+```
+GET /S1 HTTP/1.1
+Host:localhost
+Connection:keep-alive
+
+```
+you the run the follwing command:
+```
+ufuzz --host localhost --port 80/443 --config /path/to/config -w /path/to/wordlists
+```
+ufuzz will replace the S1 placeholder with input from the wordlist
+
+
