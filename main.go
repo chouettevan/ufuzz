@@ -46,7 +46,7 @@ func main() {
 	for i := 0;i < len(args.Wordlists);i++ {
 		fmt.Printf("S%d     ",i+1)
 	}
-	fmt.Println()
+	fmt.Println("Status code    Size")
 	for i := 0;i < args.Threads;i++ {
 		var conn io.ReadWriteCloser
 		var err error
