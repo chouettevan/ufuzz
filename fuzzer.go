@@ -1,12 +1,13 @@
 package main;
 
 import (
-	"github.com/chouettevan/ufuzz/parser"
 	"fmt"
 	"io"
+    "bufio"
 	"os"
 	"sync"
 	"time"
+    "net/http"
 )
 func fuzzer(connection io.ReadWriteCloser,mu *sync.Mutex,ch *chan Task,wg *sync.WaitGroup) {
 	defer connection.Close()
@@ -20,10 +21,17 @@ func fuzzer(connection io.ReadWriteCloser,mu *sync.Mutex,ch *chan Task,wg *sync.
 		_,err := connection.Write([]byte(tsk.Request))
 		delay = time.Now().UnixMilli() - delay
 		if err != nil {
-			fmt.Fprintln(os.Stderr,err.Error())
-			continue
+            fmt.Fprintf(os.Stderr,"%s %s \n",tsk.Params,err.Error())
+            wg.Done()
+            continue
 		}
-		fmt.Printf("%s    %d    %s",tsk.Params,delay,parser.HttpParse(connection))
+        res,err := http.ReadResponse(bufio.NewReader(connection),nil)
+        if err != nil {
+            fmt.Fprintf(os.Stderr,"%s %s \n",tsk.Params,err.Error())
+            wg.Done()
+            continue
+        }
+        fmt.Printf("%s %d     %d\n",tsk.Params,res.StatusCode,res.ContentLength) 
 		wg.Done()
 	}
 }
