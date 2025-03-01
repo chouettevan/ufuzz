@@ -1,6 +1,7 @@
-# Ufuzz
+# µfuzz
+## the micro fµzzer
 ---
-Ufuzz is a highly flexible web fuzzer meant for complex cases where other alternatives (like gobuster) might not be sufficient.
+µfuzz is a highly flexible web fuzzer meant for complex cases where other alternatives (like gobuster) might not be sufficient. it is also ver small
 ---
 The tool does not provide filtering ,saving or data formatting features,as these can be acheived using pipes and the GNU Coreutils.
 
@@ -24,14 +25,14 @@ in order to fuzz,you must first write a config file containing an HTTP request t
 
 ```
 GET /S1 HTTP/1.1
-Host:localhost
+Host: S2
 Connection:keep-alive
 
 ```
 you then run the follwing command:
 ```
-ufuzz --host localhost --port 80/443 --config /path/to/config -w /path/to/wordlists
+ufuzz --host localhost --port 80/443 --config /path/to/config -w /path/to/wordlist1 -w /path/to/wordlist_2
 ```
-ufuzz will replace the S1 placeholder with input from the wordlist
-
+ufuzz will replace the S1  and S2 placeholders with input from the wordlist 
+It supports an unlimited number of placeholders
 
