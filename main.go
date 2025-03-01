@@ -1,10 +1,8 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"io"
-	"net"
 	"os"
 	"sync"
 	"github.com/alexflint/go-arg"
@@ -45,21 +43,9 @@ func main() {
 	for i := 0;i < len(args.Wordlists);i++ {
 		fmt.Printf("S%d     ",i+1)
 	}
-	fmt.Println("Status code    Size")
+	fmt.Println("Status code    Size    Response time (ms)")
 	for i := 0;i < args.Threads;i++ {
-		var conn io.ReadWriteCloser
-		var err error
-		if args.Tls {
-			conn,err = tls.Dial("tcp",fmt.Sprintf("%s:%d",args.Host,args.Port),nil)
-		} else {
-			conn,err = net.Dial("tcp",fmt.Sprintf("%s:%d",args.Host,args.Port))
-		}
-		if err != nil {
-			fmt.Fprintln(os.Stderr,err.Error())
-		}
-		if conn != nil {
-			go fuzzer(conn,&mu,&channel,&wg);
-		}
+		go fuzzer(&args,&mu,&channel,&wg);
 	}
 	file,err := os.Open(args.Config)
 	if err != nil {
