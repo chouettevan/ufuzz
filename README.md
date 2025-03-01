@@ -33,6 +33,8 @@ you then run the follwing command:
 ```
 ufuzz --host localhost --port 80/443 --config /path/to/config -w /path/to/wordlist1 -w /path/to/wordlist_2
 ```
-ufuzz will replace the S1  and S2 placeholders with input from the wordlist 
+ufuzz will replace the S1  and S2 placeholders with input from the wordlist.
+-
 It supports an unlimited number of placeholders
+-
 
