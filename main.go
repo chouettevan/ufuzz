@@ -41,9 +41,9 @@ func main() {
 	channel := make(chan Task)
 	arg.MustParse(&args)
 	for i := 0;i < len(args.Wordlists);i++ {
-		fmt.Printf("S%d     ",i+1)
+		fmt.Printf("S%d\t",i+1)
 	}
-	fmt.Println("Status code    Size    Response time (ms)")
+	fmt.Println("Status\tSize\tResponse time (ms)")
 	for i := 0;i < args.Threads;i++ {
 		go fuzzer(&args,&mu,&channel,&wg);
 	}

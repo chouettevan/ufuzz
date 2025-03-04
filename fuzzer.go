@@ -31,7 +31,7 @@ func fuzzer(args *args,mu *sync.Mutex,ch *chan Task,wg *sync.WaitGroup) {
 		}
 		_,err = conn.Write([]byte(tsk.Request))
 		if err != nil {
-            fmt.Fprintf(os.Stderr,"%s %s \n",tsk.Params,err.Error())
+            fmt.Fprintf(os.Stderr,"%s\t%s\t\n",tsk.Params,err.Error())
             wg.Done()
 			conn.Close()
 			continue
@@ -39,12 +39,12 @@ func fuzzer(args *args,mu *sync.Mutex,ch *chan Task,wg *sync.WaitGroup) {
         res,err := http.ReadResponse(bufio.NewReader(conn),nil)
 		delay = time.Now().UnixMilli() - delay
         if err != nil {
-            fmt.Fprintf(os.Stderr,"%s %s \n",tsk.Params,err.Error())
+            fmt.Fprintf(os.Stderr,"%s\t%s\t\n",tsk.Params,err.Error())
             wg.Done()
 			conn.Close()
             continue
         }
-        fmt.Printf("%s %d              %d          %d\n",tsk.Params,res.StatusCode,res.ContentLength,delay) 
+        fmt.Printf("%s\t%d\t%d\t%d\n",tsk.Params,res.StatusCode,res.ContentLength,delay) 
 		wg.Done()
 		conn.Close()
 	}

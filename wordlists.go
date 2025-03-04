@@ -20,11 +20,11 @@ func SendTasks(ch* chan Task,wordlists []string,config string,num uint64,params 
 				wordlists[1:],
 				strings.ReplaceAll(config,"S"+fmt.Sprint(num),scanner.Text()),
 				num + 1,
-				params + scanner.Text() + "    ")
+				params + scanner.Text() + "\t")
 		} else {
 			var tsk Task		
 			tsk.Request = strings.ReplaceAll(config,"S"+fmt.Sprint(num),scanner.Text())
-			tsk.Params = params + scanner.Text() + "     " 
+			tsk.Params = params + scanner.Text() 
 			*ch <- tsk
 		}
 	}
